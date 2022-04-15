@@ -59,7 +59,7 @@ public class AddressBook {
         System.out.println("City : " + person.getCity());
         System.out.println("State : " + person.getState());
         System.out.println("Pin code : " + person.getZip());
-        System.out.println("Phone nmber : " + person.getPhoneNumber());
+        System.out.println("Phone number : " + person.getPhoneNumber());
         System.out.println("email : " + person.getEmail());
     }
 

@@ -20,17 +20,24 @@ public class AddressBookMain {
         int option = 0;
         boolean exit = true;
         while (exit) {
-            System.out.println("Select option 1: add user.  2: edit existing user.  "
-                    + "3: display all users 4:Delete contact. 5:seach userby city "
-                    + "6: search user by state 7:view by city 8:view by state"
-                    + " 9: sort by name 10:sort by zip 11: sort by city "
-                    + "12: sort by state 13:Switch Address Book"
-                    + "13: Write to file"
-                    + "14. Read from file"
-                    + "15. Write to CSV"
-                    + "16. Read from CSV"
-                    + "17. Write to JSON"
-                    + "18. Read from JSON");
+            System.out.println("Select option \n1:add user\n"
+                    + "2:edit existing user\n"
+                    + "3:display all users\n"
+                    + "4:Delete contact\n"
+                    + "5:seach userby city\n "
+                    + "6:search user by state\n "
+                    + "7:view by city\n"
+                    + "8:view by state\n"
+                    + "9:sort by name \n"
+                    + "10:sort by zip\n"
+                    + "11:sort by city\n "
+                    + "12:sort by state\n"
+                    + "13:Write to file\n"
+                    + "14.Read from file\n"
+                    + "15.Write to CSV\n"
+                    + "16.Read from CSV\n"
+                    + "17.Write to JSON\n"
+                    + "18.Read from JSON\n");
             option = sc.nextInt();
             switch (option) {
                 case 1:
