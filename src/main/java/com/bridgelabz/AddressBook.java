@@ -61,7 +61,7 @@ public class AddressBook {
         System.out.println("Pin code : " + person.getZip());
         System.out.println("Phone number : " + person.getPhoneNumber());
         System.out.println("email : " + person.getEmail());
-        System.out.println();
+
     }
 
     @Override
