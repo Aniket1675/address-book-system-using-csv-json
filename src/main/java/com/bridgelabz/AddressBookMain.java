@@ -10,18 +10,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class AddressBookMain {
+    public static AddressBookFileIO addressBookFileIO = new AddressBookFileIO();
     private static List<AddressBook> addressBooks = new LinkedList<AddressBook>();
     private static String[] addressBookName = new String[10];
     private static int numOfBooks = 0;
-    public static AddressBookFileIO addressBookFileIO = new AddressBookFileIO();
-
-    private boolean checkName(String name) {
-        for (int i = 0; i < addressBooks.size(); i++) {
-            if (addressBookName[i].equals(name))
-                return true;
-        }
-        return false;
-    }
 
     private static void addressMenu(AddressBook addressBook) throws Exception {
         Scanner sc = new Scanner(System.in);
@@ -36,7 +28,9 @@ public class AddressBookMain {
                     + "13: Write to file"
                     + "14. Read from file"
                     + "15. Write to CSV"
-                    + "16. Read from CSV");
+                    + "16. Read from CSV"
+                    + "17. Write to JSON"
+                    + "18. Read from JSON");
             option = sc.nextInt();
             switch (option) {
                 case 1:
@@ -110,6 +104,23 @@ public class AddressBookMain {
                         e.printStackTrace();
                     }
                     break;
+                case 17:
+                    try {
+                        addressBook.writeDataToJson();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    break;
+
+                case 18:
+                    try {
+                        addressBook.readDataFromJson();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    break;
 
                 default:
                     exit = false;
@@ -149,8 +160,7 @@ public class AddressBookMain {
                     String bookName = sc.next();
                     int i = 0;
                     for (i = 0; i < numOfBooks; i++) {
-                        if (addressBookName[i].equals(bookName))
-                            break;
+                        if (addressBookName[i].equals(bookName)) break;
                     }
 
                     if (i == numOfBooks) {
@@ -166,5 +176,12 @@ public class AddressBookMain {
         }
 
         sc.close();
+    }
+
+    private boolean checkName(String name) {
+        for (int i = 0; i < addressBooks.size(); i++) {
+            if (addressBookName[i].equals(name)) return true;
+        }
+        return false;
     }
 }

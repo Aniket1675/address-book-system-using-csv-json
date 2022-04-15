@@ -1,5 +1,6 @@
 package com.bridgelabz;
 
+import com.google.gson.Gson;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
@@ -8,44 +9,72 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 //import com.opencsv.exceptions.CsvValidationException;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class AddressBook {
-    ArrayList<ContactPerson> contactBook = new ArrayList<ContactPerson>();
+    private static int numberOfConatcts = 0;
     public HashMap<String, ArrayList<ContactPerson>> personsByCity = new HashMap<String, ArrayList<ContactPerson>>();
     public HashMap<String, ArrayList<ContactPerson>> personsByState = new HashMap<String, ArrayList<ContactPerson>>();
-
+    ArrayList<ContactPerson> contactBook = new ArrayList<ContactPerson>();
     Scanner sc = new Scanner(System.in);
-    private static int numberOfConatcts = 0;
     private String adressBookName;
+    public String nameString = this.adressBookName + ".txt";
 
+    private static ContactPerson details() {
+        Scanner sc = new Scanner(System.in);
+        ContactPerson person1 = new ContactPerson();
+
+        System.out.println("Enter firstName:");
+        person1.setFirstName(sc.next());
+        System.out.println("Enter SecondName:");
+        person1.setLastName(sc.next());
+        System.out.println("Enter Address:");
+        person1.setAddress(sc.next());
+        System.out.println("Enter City:");
+        person1.setCity(sc.next());
+        System.out.println("Enter State:");
+        person1.setState(sc.next());
+        System.out.println("Enter Pin code:");
+        person1.setZip(sc.nextInt());
+        System.out.println("Enter Phone nmber:");
+        person1.setPhoneNumber(sc.next());
+        System.out.println("Enter email:");
+        person1.setEmail(sc.next());
+        return person1;
+    }
+
+    private static void output(ContactPerson person) {
+        System.out.println("firstName : " + person.getFirstName());
+        System.out.println("SecondName : " + person.getLastName());
+        System.out.println("Address : " + person.getAddress());
+        System.out.println("City : " + person.getCity());
+        System.out.println("State : " + person.getState());
+        System.out.println("Pin code : " + person.getZip());
+        System.out.println("Phone nmber : " + person.getPhoneNumber());
+        System.out.println("email : " + person.getEmail());
+    }
 
     @Override
     public String toString() {
         return "AddressBook [adressBookName=" + adressBookName + "]";
     }
 
-
     public String getAdressBookName() {
         return adressBookName;
     }
 
-
     public void setAdressBookName(String adressBookName) {
         this.adressBookName = adressBookName;
     }
-
-    public String nameString = this.adressBookName + ".txt";
 
     public void write() {
         AddressBookFileIO.writeData(contactBook, this.adressBookName + ".txt");
@@ -72,7 +101,6 @@ public class AddressBook {
 
 
     }
-
 
     public void edit() {
         System.out.println("enter the name to edit contact details");
@@ -160,29 +188,6 @@ public class AddressBook {
         }
     }
 
-    private static ContactPerson details() {
-        Scanner sc = new Scanner(System.in);
-        ContactPerson person1 = new ContactPerson();
-
-        System.out.println("Enter firstName:");
-        person1.setFirstName(sc.next());
-        System.out.println("Enter SecondName:");
-        person1.setLastName(sc.next());
-        System.out.println("Enter Address:");
-        person1.setAddress(sc.next());
-        System.out.println("Enter City:");
-        person1.setCity(sc.next());
-        System.out.println("Enter State:");
-        person1.setState(sc.next());
-        System.out.println("Enter Pin code:");
-        person1.setZip(sc.nextInt());
-        System.out.println("Enter Phone nmber:");
-        person1.setPhoneNumber(sc.next());
-        System.out.println("Enter email:");
-        person1.setEmail(sc.next());
-        return person1;
-    }
-
     public void searchByCity(String city, String firstName) {
         Predicate<ContactPerson> searchPerson = (contact -> contact.getCity().equals(city) && contact.getFirstName().equals(firstName));
         contactBook.stream().filter(searchPerson).forEach(person -> output(person));
@@ -195,7 +200,7 @@ public class AddressBook {
 
     public void personsInCity(String city) {
         ArrayList<ContactPerson> list = personsByCity.get(city);
-        list.stream().forEach(person -> output(person));
+        list.forEach(AddressBook::output);
     }
 
     public void personsInState(String State) {
@@ -227,21 +232,10 @@ public class AddressBook {
                 .forEach(System.out::println);
     }
 
-    private static void output(ContactPerson person) {
-        System.out.println("firstName : " + person.getFirstName());
-        System.out.println("SecondName : " + person.getLastName());
-        System.out.println("Address : " + person.getAddress());
-        System.out.println("City : " + person.getCity());
-        System.out.println("State : " + person.getState());
-        System.out.println("Pin code : " + person.getZip());
-        System.out.println("Phone nmber : " + person.getPhoneNumber());
-        System.out.println("email : " + person.getEmail());
-    }
-
     public void writeDataToCSV() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
 
         String fileName = "./" + this.adressBookName + "Contacts.csv";
-        try (Writer writer = Files.newBufferedWriter(Paths.get(fileName))) {
+        try (Writer writer = Files.newBufferedWriter(Paths.get(fileName));) {
 
             StatefulBeanToCsvBuilder<ContactPerson> builder = new StatefulBeanToCsvBuilder<>(writer);
             StatefulBeanToCsv<ContactPerson> beanWriter = builder.build();
@@ -254,7 +248,7 @@ public class AddressBook {
         }
     }
 
-    public <Exception extends Throwable> void readDataFromCSV() throws IOException {
+    public <Exception extends Throwable> void readDataFromCSV() throws IOException, Exception {
 
         String fileName = "./" + this.adressBookName + "Contacts.csv";
         try (Reader reader = Files.newBufferedReader(Paths.get(fileName));
@@ -262,15 +256,49 @@ public class AddressBook {
 
             String[] nextRecord;
             while ((nextRecord = csvReader.readNext()) != null) {
-                System.out.println("First Name = " + nextRecord[3]);
-                System.out.println("Last Name = " + nextRecord[4]);
-                System.out.println("Address = " + nextRecord[0]);
-                System.out.println("City = " + nextRecord[1]);
-                System.out.println("State = " + nextRecord[6]);
-                System.out.println("Email = " + nextRecord[2]);
-                System.out.println("Phone Number = " + nextRecord[5]);
-                System.out.println("Zip Code = " + nextRecord[7]);
+                System.out.println("First Name = " + nextRecord[2]);
+                System.out.println("Last Name = " + nextRecord[3]);
+                System.out.println("City = " + nextRecord[0]);
+                System.out.println("State = " + nextRecord[5]);
+                System.out.println("Email = " + nextRecord[1]);
+                System.out.println("Phone Number = " + nextRecord[4]);
+                System.out.println("Zip Code = " + nextRecord[6]);
                 System.out.println("\n");
+            }
+        }
+    }
+
+    public void writeDataToJson() throws IOException {
+
+        String fileName = "./" + this.adressBookName + ".json";
+        Path filePath = Paths.get(fileName);
+        Gson gson = new Gson();
+        String json = gson.toJson(contactBook);
+        FileWriter writer = new FileWriter(String.valueOf(filePath));
+        writer.write(json);
+        writer.close();
+
+    }
+
+    public void readDataFromJson() throws IOException {
+
+        ArrayList<ContactPerson> contactList;
+        String fileName = "./" + this.adressBookName + ".json";
+        Path filePath = Paths.get(fileName);
+
+        try (Reader reader = Files.newBufferedReader(filePath)) {
+            Gson gson = new Gson();
+            contactList = new ArrayList<>(Arrays.asList(gson.fromJson(reader, ContactPerson[].class)));
+            for (ContactPerson contact : contactList) {
+                System.out.println("{");
+                System.out.println("Firstname : " + contact.getFirstName());
+                System.out.println("Lastname : " + contact.getLastName());
+                System.out.println("City : " + contact.getCity());
+                System.out.println("State : " + contact.getState());
+                System.out.println("Zip Code : " + contact.getZip());
+                System.out.println("Phone number : " + contact.getPhoneNumber());
+                System.out.println("Email : " + contact.getEmail());
+                System.out.println("}\n");
             }
         }
     }
